@@ -18,28 +18,43 @@ static const char ORIENTATION_KEY;
     return [objc_getAssociatedObject(self, &ORIENTATION_KEY)  intValue];
 }
 
-- (void)setOrientation:(UITableViewOrientation)orientation
+- (void)setOrientation:(UITableViewOrientation)newOrientation
 {
-    objc_setAssociatedObject(self, &ORIENTATION_KEY, [NSNumber numberWithInt:orientation], OBJC_ASSOCIATION_RETAIN/*OBJC_ASSOCIATION_COPY_NONATOMIC*/);
+    UITableViewOrientation prevOrientation = self.orientation;
     
-    switch (orientation)
+    if (newOrientation == prevOrientation)
+        return ;
+
+    objc_setAssociatedObject(self, &ORIENTATION_KEY, [NSNumber numberWithInt:newOrientation], OBJC_ASSOCIATION_RETAIN/*OBJC_ASSOCIATION_COPY_NONATOMIC*/);
+
+    BOOL wasLandscape = (prevOrientation == UITableViewOrientationLandscapeLeft) ||
+                        (prevOrientation == UITableViewOrientationLandscapeRight);
+    
+    switch (newOrientation)
     {
         case UITableViewOrientationPortrait:
+            if (wasLandscape)
+                self.bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+            self.transform = CGAffineTransformIdentity;
             break;
         
         case UITableViewOrientationLandscapeRight:
-            self.bounds = CGRectMake(0, 0, self.frame.size.height, self.frame.size.width);
-            self.transform = CGAffineTransformScale(self.transform, 1, -1);
+            if (!wasLandscape)
+                self.bounds = CGRectMake(0, 0, self.frame.size.height, self.frame.size.width);
+            self.transform = CGAffineTransformScale(CGAffineTransformIdentity, 1, -1);
             self.transform = CGAffineTransformRotate(self.transform, -M_PI_2);
             break;
 
         case UITableViewOrientationLandscapeLeft:
-            self.bounds = CGRectMake(0, 0, self.frame.size.height, self.frame.size.width);
-            self.transform = CGAffineTransformRotate(self.transform, M_PI_2);
+            if (!wasLandscape)
+                self.bounds = CGRectMake(0, 0, self.frame.size.height, self.frame.size.width);
+            self.transform = CGAffineTransformRotate(CGAffineTransformIdentity, M_PI_2);
             break;
         
         case UITableViewOrientationPortraitUpsideDown:
-            self.transform = CGAffineTransformScale(self.transform, -1, 1);
+            if (wasLandscape)
+                self.bounds = CGRectMake(0, 0, self.frame.size.width, self.frame.size.height);
+            self.transform = CGAffineTransformScale(CGAffineTransformIdentity, -1, 1);
             self.transform = CGAffineTransformRotate(self.transform, M_PI);
             break;
     }
@@ -48,23 +63,25 @@ static const char ORIENTATION_KEY;
 
 - (void)applyOrientationToCell:(UITableViewCell *)cell
 {
+    cell.contentView.backgroundColor = [UIColor lightGrayColor];
     switch (self.orientation)
     {
         case UITableViewOrientationPortrait:
+            cell.contentView.transform = CGAffineTransformIdentity;
             break;
             
         case UITableViewOrientationLandscapeRight:
-            cell.transform = CGAffineTransformRotate(cell.transform, M_PI_2);
-            cell.transform = CGAffineTransformScale(cell.transform, 1, -1);
+            cell.contentView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, M_PI_2);
+            cell.contentView.transform = CGAffineTransformScale(cell.contentView.transform, 1, -1);
             break;
             
         case UITableViewOrientationLandscapeLeft:
-            cell.transform = CGAffineTransformRotate(cell.transform, -M_PI_2);
+            cell.contentView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, -M_PI_2);
             break;
             
         case UITableViewOrientationPortraitUpsideDown:
-            cell.transform = CGAffineTransformRotate(cell.transform, -M_PI);
-            cell.transform = CGAffineTransformScale(cell.transform, -1, 1);
+            cell.contentView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, -M_PI);
+            cell.contentView.transform = CGAffineTransformScale(cell.contentView.transform, -1, 1);
             break;
     }
 }

@@ -63,7 +63,6 @@ static const char ORIENTATION_KEY;
 
 - (void)applyOrientationToCell:(UITableViewCell *)cell
 {
-    cell.contentView.backgroundColor = [UIColor lightGrayColor];
     switch (self.orientation)
     {
         case UITableViewOrientationPortrait:

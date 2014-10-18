@@ -63,24 +63,29 @@ static const char ORIENTATION_KEY;
 
 - (void)applyOrientationToCell:(UITableViewCell *)cell
 {
+    [self applyOrientationToView:cell.contentView];
+}
+
+- (void)applyOrientationToView:(UIView *)view
+{
     switch (self.orientation)
     {
         case UITableViewOrientationPortrait:
-            cell.contentView.transform = CGAffineTransformIdentity;
+            view.transform = CGAffineTransformIdentity;
             break;
             
         case UITableViewOrientationLandscapeRight:
-            cell.contentView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, M_PI_2);
-            cell.contentView.transform = CGAffineTransformScale(cell.contentView.transform, 1, -1);
+            view.transform = CGAffineTransformRotate(CGAffineTransformIdentity, M_PI_2);
+            view.transform = CGAffineTransformScale(view.transform, 1, -1);
             break;
             
         case UITableViewOrientationLandscapeLeft:
-            cell.contentView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, -M_PI_2);
+            view.transform = CGAffineTransformRotate(CGAffineTransformIdentity, -M_PI_2);
             break;
             
         case UITableViewOrientationPortraitUpsideDown:
-            cell.contentView.transform = CGAffineTransformRotate(CGAffineTransformIdentity, -M_PI);
-            cell.contentView.transform = CGAffineTransformScale(cell.contentView.transform, -1, 1);
+            view.transform = CGAffineTransformRotate(CGAffineTransformIdentity, -M_PI);
+            view.transform = CGAffineTransformScale(view.transform, -1, 1);
             break;
     }
 }

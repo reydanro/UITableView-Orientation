@@ -20,5 +20,6 @@ typedef enum {
 @property (nonatomic, readwrite) UITableViewOrientation orientation;
 
 - (void)applyOrientationToCell:(UITableViewCell*)cell;
+- (void)applyOrientationToView:(UIView *)view;
 
 @end
